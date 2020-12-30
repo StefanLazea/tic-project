@@ -1,7 +1,6 @@
 const bcrypt = require("bcryptjs");
 const TokenService = require('../services/token')
 const UserService = require("../services/user");
-const admin = require('firebase-admin');
 const db = require('../firebase/firebase')
 
 const login = async (req, res) => {
