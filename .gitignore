@@ -1,0 +1,7 @@
+/backend/node_modules
+/backend/.env
+/backend/.history
+/backend/firebase/serviceAccountKey.json
+/backend/firebase/firebase.config.js
+/frontend/node_modules
+.history
