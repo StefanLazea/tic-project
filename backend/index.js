@@ -16,15 +16,6 @@ app.use(express.static("public"));
 app.use(cors());
 dotenv.config();
 
-// firebase.initializeApp(config);
-
-const serviceAccount = require('./firebase/serviceAccountKey.json');
-
-admin.initializeApp( {
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://tic-slazea.firebaseio.com"
-});
-
 app.use("/api", routes);
 
 app.listen(process.env.PORT, () => {

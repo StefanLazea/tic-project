@@ -1,9 +1,9 @@
 
 const admin = require('firebase-admin');
+const db = require('../firebase/firebase')
 
 //todo debug heere
 const findUserByEmail = async(email) => {
-    const db = admin.firestore();
     let userFound = db.collection("users").where("email", "==", email)
     .get()
     .then(function(querySnapshot) {

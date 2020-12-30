@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const TokenService = require('../services/token')
 const UserService = require("../services/user");
 const admin = require('firebase-admin');
+const db = require('../firebase/firebase')
 
 const login = async (req, res) => {
     let userFound = await UserService.findUserByEmail(req.body.email);
@@ -37,7 +38,6 @@ const register = async (req, res) => {
     }
 
     try {
-        const db = admin.firestore();
         await db.collection('users').add(user);
         return res.send({ message: "User created" });
     } catch (err) {
