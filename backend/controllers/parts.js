@@ -1,16 +1,15 @@
-const firebase = require('firebase');
+const db = require('../firebase/firebase')
 
-const getAllParts = (req, res) => {
-    let firebaseRef = firebase.database();
-    let partsTable = firebaseRef.ref("/parts/");
-    partsTable.once('value', (snapshot)=>{
-		res.status(200).send(snapshot.val());
-	})
-	.catch(()=>{
-		res.status(500).send();
-	})
+const getAllParts = async (req, res) => {
+	const citiesRef = db.collection('parts');
+	const snapshot = await citiesRef.get();
+	let parts = [];
+	snapshot.forEach(doc => {
+		parts.push(doc.data())
+	});
+	return res.send(parts);
 }
 
 module.exports = {
-    getAllParts
+	getAllParts
 }

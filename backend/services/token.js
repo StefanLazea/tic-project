@@ -1,4 +1,3 @@
-
 const jwt = require("jsonwebtoken");
 const dotenv = require('dotenv');
 dotenv.config();
@@ -6,29 +5,18 @@ dotenv.config();
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 const EXPIRATION_DATE = process.env.EXPIRATION_TIME;
 
-// console.log(TOKEN_SECRET)
-// const createToken = (userFound) => {
-//     return jwt.sign({ email: userFound.email}, TOKEN_SECRET,
-//         {
-//             expiresIn: EXPIRATION_DATE
-//         });
-// }
-
-const secret = 'secret';
 const createToken = (userFound) => {
-    return jwt.sign(
+    return jwt.sign({ id: userFound.id }, TOKEN_SECRET,
         {
-       email: userFound.email
-    },
-    secret, {
-        expiresIn: "1hr"
-    })
+            expiresIn: EXPIRATION_DATE
+        });
 }
-const getUserEmail = (token) => {
+
+const getUserId = (token) => {
     const decode = jwt.decode(token, secret);
-    return decode.email;
+    return decode.id;
 }
 module.exports = {
     createToken,
-    getUserEmail
+    getUserId
 }

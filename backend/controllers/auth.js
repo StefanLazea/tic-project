@@ -20,7 +20,6 @@ const login = async (req, res) => {
     console.log(userFound, "aici")
 
     const token = TokenService.createToken(userFound);
-    console.log(req.cookies)
     res.send({
             token: "Bearer " + token
         });
