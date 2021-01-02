@@ -1,14 +1,75 @@
 <template>
-  <div class="Parts">
-    <span> aici va fi un tabel </span>
+  <div class="PartsLayout">
+    <DataTable :value="parts">
+      <Column field="code" header="Code"></Column>
+      <Column field="name" header="Name"></Column>
+      <Column field="price" header="Price"></Column>
+      <Column field="quantity" header="Quantity"></Column>
+    </DataTable>
   </div>
 </template>
 
 <script>
-export default {};
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import CarService from "../service/CarService";
+export default {
+  data() {
+    return {
+      parts: null
+    };
+  },
+  carService: null,
+  created() {
+    this.carService = new CarService();
+  },
+  mounted() {
+    this.carService.getCars().then(data => (this.parts = data));
+  },
+  components: {
+    DataTable,
+    Column
+  }
+};
 </script>
 <style scoped>
-.Parts {
+.PartsLayout {
+  padding: 20px;
   margin-top: 20px;
+}
+.p-datatable-responsive-demo .p-datatable-tbody > tr > td .p-column-title {
+  display: none;
+}
+
+@media screen and (max-width: 40em) {
+  ::v-deep(.p-datatable) {
+    &.p-datatable-responsive-demo {
+      .p-datatable-thead > tr > th,
+      .p-datatable-tfoot > tr > td {
+        display: none !important;
+      }
+
+      .p-datatable-tbody > tr > td {
+        text-align: left;
+        display: block;
+        width: 100%;
+        float: left;
+        clear: left;
+        border: 0 none;
+
+        .p-column-title {
+          padding: 0.4rem;
+          min-width: 30%;
+          display: inline-block;
+          margin: -0.4em 1em -0.4em -0.4rem;
+          font-weight: bold;
+        }
+
+        &:last-child {
+          border-bottom: 1px solid var(--surface-d);
+        }
+      }
+    }
+  }
 }
 </style>
