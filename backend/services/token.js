@@ -6,18 +6,29 @@ dotenv.config();
 const TOKEN_SECRET = process.env.TOKEN_SECRET;
 const EXPIRATION_DATE = process.env.EXPIRATION_TIME;
 
-const createToken = (userFound) => {
-    return jwt.sign({ id: userFound.id, role: userFound.role }, TOKEN_SECRET,
-        {
-            expiresIn: EXPIRATION_DATE
-        });
-}
+// console.log(TOKEN_SECRET)
+// const createToken = (userFound) => {
+//     return jwt.sign({ email: userFound.email}, TOKEN_SECRET,
+//         {
+//             expiresIn: EXPIRATION_DATE
+//         });
+// }
 
-const getUserId = (token) => {
+const secret = 'secret';
+const createToken = (userFound) => {
+    return jwt.sign(
+        {
+       email: userFound.email
+    },
+    secret, {
+        expiresIn: "1hr"
+    })
+}
+const getUserEmail = (token) => {
     const decode = jwt.decode(token, secret);
-    return decode.id;
+    return decode.email;
 }
 module.exports = {
     createToken,
-    getUserId
+    getUserEmail
 }

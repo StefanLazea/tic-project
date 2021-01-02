@@ -5,11 +5,13 @@ const admin = require('firebase-admin');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const routes = require('./routes');
+const cookieParser = require('cookie-parser');
+
 // const { config } = require('./firebase/firebase.config');
 const dotenv = require('dotenv');
 
 const app = express();
-
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));

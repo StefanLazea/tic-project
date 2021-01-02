@@ -17,10 +17,11 @@ const login = async (req, res) => {
         return res.status(400).send({ message: "Wrong password" });
     }
 
+    console.log(userFound, "aici")
+
     const token = TokenService.createToken(userFound);
     console.log(req.cookies)
-    res.cookie("token", token, { secure: false, httpOnly: true })
-        .send({
+    res.send({
             token: "Bearer " + token
         });
 };
