@@ -4,6 +4,7 @@ const UserService = require("../services/user");
 const db = require('../firebase/firebase')
 
 const login = async (req, res) => {
+    console.log("login", req.body)
     let userFound = await UserService.findUserByEmail(req.body.email);
     console.log(userFound);
     if (!userFound) {
@@ -21,8 +22,8 @@ const login = async (req, res) => {
 
     const token = TokenService.createToken(userFound);
     res.send({
-            token: "Bearer " + token
-        });
+        token: "Bearer " + token
+    });
 };
 
 const register = async (req, res) => {
@@ -44,7 +45,7 @@ const register = async (req, res) => {
     }
 };
 
-module.exports = {    
+module.exports = {
     login,
     register
 }
