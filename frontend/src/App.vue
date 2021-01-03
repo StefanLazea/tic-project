@@ -1,11 +1,13 @@
 <template>
   <div id="nav">
     <Menubar :model="items" />
+    <Toast position="top-right" />
     <router-view />
   </div>
 </template>
 <script>
 import Menubar from "primevue/menubar";
+import Toast from "primevue/toast";
 
 export default {
   data() {
@@ -34,7 +36,8 @@ export default {
     };
   },
   components: {
-    Menubar
+    Menubar,
+    Toast
   }
 };
 </script>

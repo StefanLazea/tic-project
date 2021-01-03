@@ -32,6 +32,7 @@ import Fieldset from "primevue/fieldset";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import UserService from "../service/UserService";
+// import Toast from "primevue/toast";
 
 export default {
   data() {
@@ -51,10 +52,35 @@ export default {
         email: this.user.email,
         password: this.user.password
       };
-      console.log(user);
+      if (user.email === undefined || user.password === undefined) {
+        this.$toast.add({
+          severity: "error",
+          summary: "Email or password should not be empty",
+          life: 3000
+        });
+      }
       this.userService
         .authenticate(user)
-        .then(data => localStorage.setItem("token", data.token));
+        .then(data => {
+          this.$toast.add({
+            severity: "success",
+            summary: `Welcome, ${user.email}`,
+            detail: "Logged in successfully!",
+            life: 3000
+          });
+          localStorage.setItem("token", data.token);
+          this.$router.push("parts");
+        })
+        .catch(err => {
+          console.log(err.response.status);
+          if (err.response.status === 404) {
+            this.$toast.add({
+              severity: "error",
+              summary: "User not found",
+              life: 3000
+            });
+          }
+        });
     }
   },
   components: {
