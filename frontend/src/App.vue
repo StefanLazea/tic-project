@@ -30,7 +30,17 @@ export default {
         },
         {
           label: "Sign Out",
-          icon: "pi pi-fw pi-power-off"
+          icon: "pi pi-fw pi-power-off",
+          command: () => {
+            localStorage.clear();
+            this.$toast.add({
+              severity: "success",
+              summary: "Success",
+              detail: "Logged out",
+              life: 2000
+            });
+            this.$router.push("/parts");
+          }
         }
       ]
     };

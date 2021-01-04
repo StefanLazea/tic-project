@@ -1,5 +1,7 @@
 <template>
   <div class="PartsLayout">
+    <Button v-if="auth === true" label="Add part" class="right" />
+
     <DataTable :value="parts">
       <Column field="code" header="Code"></Column>
       <Column field="name" header="Name"></Column>
@@ -12,11 +14,14 @@
 <script>
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import Button from "primevue/button";
+
 import CarService from "../service/CarService";
 export default {
   data() {
     return {
-      parts: null
+      parts: null,
+      auth: false
     };
   },
   carService: null,
@@ -25,10 +30,14 @@ export default {
   },
   mounted() {
     this.carService.getCars().then(data => (this.parts = data));
+    if (localStorage.getItem("token")) {
+      this.auth = true;
+    }
   },
   components: {
     DataTable,
-    Column
+    Column,
+    Button
   }
 };
 </script>
@@ -36,6 +45,12 @@ export default {
 .PartsLayout {
   padding: 20px;
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.right {
+  margin-bottom: 20px;
+  max-width: 100px;
 }
 .p-datatable-responsive-demo .p-datatable-tbody > tr > td .p-column-title {
   display: none;
