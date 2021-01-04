@@ -19,9 +19,9 @@ export default {
           to: "/parts"
         },
         {
-          label: "Users",
+          label: "Stocks",
           icon: "pi pi-fw pi-user",
-          to: "/users"
+          to: "/stocks"
         },
         {
           label: "Log in",
