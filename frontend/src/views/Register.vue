@@ -1,15 +1,15 @@
 <template>
-  <div class="Login">
-    <div>
+  <div class="Register">
+    <!-- <div>
       <Button
         icon="pi pi-home"
         class="p-button-rounded p-button-info p-button-outlined"
         @click="handleToHomeClick($event)"
       />
-    </div>
+    </div> -->
     <div class="container">
       <Fieldset>
-        <template #legend> Login </template>
+        <template #legend> Register </template>
         <div class="p-fluid">
           <div class="p-field">
             <InputText
@@ -22,18 +22,44 @@
           <div class="p-field">
             <InputText
               id="inputtext"
+              type="text"
+              v-model="user.firstName"
+              placeholder="firstname"
+            />
+          </div>
+          <div class="p-field">
+            <InputText
+              id="inputtext"
+              type="text"
+              v-model="user.lastName"
+              placeholder="lastname"
+            />
+          </div>
+          <div class="p-field">
+            <InputText
+              id="inputtext"
+              type="text"
+              v-model="user.phone"
+              placeholder="phone"
+            />
+          </div>
+          <div class="p-field">
+            <InputText
+              id="inputtext"
               type="password"
               v-model="user.password"
               placeholder="password"
             />
           </div>
-          <div class="submit">
-            <Button label="Log In" @click="handleClick($event)" />
-            <span class="marginTop"
-              >You don't have an account?
-              <router-link to="/register">Register here.</router-link>
-            </span>
+          <div class="p-field">
+            <InputText
+              id="inputtext"
+              type="password"
+              v-model="confirmPassword"
+              placeholder="confirm password"
+            />
           </div>
+          <Button label="Register" @click="handleClick($event)" />
         </div>
       </Fieldset>
     </div>
@@ -50,7 +76,8 @@ import UserService from "../service/UserService";
 export default {
   data() {
     return {
-      user: {}
+      user: {},
+      confirmPassword: ""
     };
   },
   userService: null,
@@ -58,16 +85,15 @@ export default {
     this.userService = new UserService();
   },
   methods: {
-    handleToHomeClick(evt) {
-      evt.preventDefault();
-      this.$router.push("parts");
-    },
     handleClick(evt) {
       evt.preventDefault();
       console.log(this.user.email, this.user.password);
       const user = {
         email: this.user.email,
-        password: this.user.password
+        password: this.user.password,
+        firstName: this.user.firstName,
+        lastName: this.user.lastName,
+        phone: this.user.phone
       };
       if (user.email === undefined || user.password === undefined) {
         this.$toast.add({
@@ -76,8 +102,16 @@ export default {
           life: 3000
         });
       }
+      if (user.password !== this.confirmPassword) {
+        this.$toast.add({
+          severity: "error",
+          summary: "Passwords should match",
+          life: 3000
+        });
+        return;
+      }
       this.userService
-        .authenticate(user)
+        .register(user)
         .then(data => {
           this.$toast.add({
             severity: "success",
@@ -108,18 +142,10 @@ export default {
 };
 </script>
 <style scoped>
-.Login {
+.Register {
   margin-top: 20px;
   display: flex;
   justify-content: center;
-}
-
-.submit {
-  display: flex;
-  flex-direction: column;
-}
-.marginTop {
-  margin-top: 20px;
 }
 .container {
   min-width: 400px;
