@@ -1,13 +1,133 @@
 <template>
-  <div class="PartsLayout">
-    <Button v-if="auth === true" label="Add part" class="right" />
+  <div class="Stocks">
+    <div>
+      <Toolbar class="p-mb-4">
+        <template #left>
+          <Button
+            label="New"
+            icon="pi pi-plus"
+            class="p-button-success"
+            @click="openNew"
+          />
+          <Button
+            label="Delete"
+            icon="pi pi-trash"
+            class="p-button-danger"
+            :disabled="!selectedProducts || !selectedProducts.length"
+          />
+        </template>
+      </Toolbar>
+    </div>
+    <div class="table">
+      <ProgressSpinner v-if="partsLoading"></ProgressSpinner>
+      <p v-else-if="parts.length === 0 && !partsLoading">
+        Sorry, there are no parts in our database.
+      </p>
+      <DataTable
+        ref="dt"
+        :value="parts"
+        dataKey="id"
+        :paginator="true"
+        :rows="10"
+        :filters="filters"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        :rowsPerPageOptions="[5, 10, 25]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+      >
+        <Column
+          selectionMode="multiple"
+          headerStyle="width: 3rem"
+          :exportable="false"
+        ></Column>
+        <Column field="code" header="Code" :sortable="true"></Column>
+        <Column field="name" header="Name" :sortable="true"></Column>
+        <Column field="price" header="Price" :sortable="true"></Column>
 
-    <DataTable :value="parts">
-      <Column field="code" header="Code"></Column>
-      <Column field="name" header="Name"></Column>
-      <Column field="price" header="Price"></Column>
-      <Column field="quantity" header="Quantity"></Column>
-    </DataTable>
+        <Column :exportable="false">
+          <template #body="slotProps">
+            <Button
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-success p-mr-2"
+              @click="editPart(slotProps.data)"
+            />
+            <Button
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-warning"
+              @click="deletePart(slotProps.data)"
+            />
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+
+    <Dialog
+      v-model:visible="partDialog"
+      :style="{ width: '450px' }"
+      header="Product Details"
+      :modal="true"
+      class="p-fluid"
+    >
+      <div class="p-field">
+        <InputText
+          id="code"
+          v-model.trim="part.code"
+          required="true"
+          placeholder="Code"
+          autofocus
+          :class="{ 'p-invalid': submitted && !part.code }"
+        />
+        <small class="p-invalid" v-if="submitted && !part.code"
+          >Code is required.</small
+        >
+      </div>
+      <div class="p-field">
+        <InputText
+          id="name"
+          v-model.trim="part.name"
+          required="true"
+          placeholder="Name"
+          autofocus
+          :class="{ 'p-invalid': submitted && !part.name }"
+        />
+        <small class="p-invalid" v-if="submitted && !part.name"
+          >Name is required.</small
+        >
+      </div>
+
+      <div class="p-field">
+        <InputNumber
+          id="price"
+          v-model="part.price"
+          mode="currency"
+          placeholder="Price"
+          currency="USD"
+          locale="en-US"
+        />
+      </div>
+      <div class="p-field p-col">
+        <InputNumber
+          id="quantity"
+          v-model="part.quantity"
+          placeholder="Quantity"
+          integeronly
+        />
+      </div>
+
+      <template #footer>
+        <Button
+          label="Cancel"
+          icon="pi pi-times"
+          class="p-button-text"
+          @click="hideDialog"
+        />
+        <Button
+          label="Save"
+          icon="pi pi-check"
+          class="p-button-text"
+          @click="savePart"
+        />
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -15,76 +135,128 @@
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
-
-import CarService from "../service/CarService";
+import Toolbar from "primevue/toolbar";
+import Dialog from "primevue/dialog";
+import InputNumber from "primevue/inputnumber";
+import PartService from "../service/PartService";
+import InputText from "primevue/inputtext";
+import ProgressSpinner from "primevue/progressspinner";
 export default {
   data() {
     return {
-      parts: null,
-      auth: false
+      parts: [],
+      auth: false,
+      submitted: false,
+      partDialog: false,
+      partsLoading: false,
+      part: {}
     };
   },
-  carService: null,
+  partService: null,
   created() {
-    this.carService = new CarService();
+    this.partService = new PartService();
   },
   mounted() {
-    this.carService.getCars().then(data => (this.parts = data));
+    this.partService.getParts().then(data => (this.parts = data));
+    console.log(this.parts);
     if (localStorage.getItem("token")) {
       this.auth = true;
+    }
+  },
+  methods: {
+    getParts() {
+      this.partsLoading = true;
+      this.partService.getParts().then(data => {
+        this.parts = data;
+        this.partsLoading = false;
+      });
+    },
+    openNew() {
+      this.product = {};
+      this.submitted = false;
+      this.partDialog = true;
+    },
+    hideDialog() {
+      this.partDialog = false;
+      this.submitted = false;
+    },
+    savePart() {
+      this.submitted = true;
+
+      console.log(this.part);
+      this.partService.savePart(this.part).then(res => {
+        this.$toast.add({
+          severity: "success",
+          summary: `${res.message}`,
+          detail: "Added a part!",
+          life: 3000
+        });
+
+        this.hideDialog();
+        this.getParts();
+
+        // this.part = {};
+      });
+    },
+    deletePart(part) {
+      console.log(part);
+      this.partService.deletePart(part.id).then(res => {
+        this.$toast.add({
+          severity: "success",
+          summary: `${res.message}`,
+          detail: "Added a part!",
+          life: 3000
+        });
+        this.getParts();
+      });
+    },
+    editPart(part) {
+      console.log(part);
     }
   },
   components: {
     DataTable,
     Column,
-    Button
+    Button,
+    Toolbar,
+    Dialog,
+    InputNumber,
+    InputText,
+    ProgressSpinner
   }
 };
 </script>
+
 <style scoped>
-.PartsLayout {
+.Stocks {
   padding: 20px;
   margin-top: 20px;
   display: flex;
   flex-direction: column;
 }
-.right {
-  margin-bottom: 20px;
-  max-width: 100px;
+.table {
+  margin-top: 20px;
 }
-.p-datatable-responsive-demo .p-datatable-tbody > tr > td .p-column-title {
-  display: none;
+.p-field {
+  margin-bottom: 10px;
+}
+.p-button-success {
+  margin-right: 10px;
+}
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-@media screen and (max-width: 40em) {
-  ::v-deep(.p-datatable) {
-    &.p-datatable-responsive-demo {
-      .p-datatable-thead > tr > th,
-      .p-datatable-tfoot > tr > td {
-        display: none !important;
-      }
-
-      .p-datatable-tbody > tr > td {
-        text-align: left;
-        display: block;
-        width: 100%;
-        float: left;
-        clear: left;
-        border: 0 none;
-
-        .p-column-title {
-          padding: 0.4rem;
-          min-width: 30%;
-          display: inline-block;
-          margin: -0.4em 1em -0.4em -0.4rem;
-          font-weight: bold;
-        }
-
-        &:last-child {
-          border-bottom: 1px solid var(--surface-d);
-        }
-      }
-    }
-  }
+.p-dialog .product-image {
+  width: 150px;
+  margin: 0 auto 2rem auto;
+  display: block;
+}
+.confirmation-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

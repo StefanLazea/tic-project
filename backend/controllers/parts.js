@@ -27,6 +27,7 @@ const updateParts = async (req, res) => {
 }
 
 const savePart = async (req, res) => {
+	console.log("alo", req.body)
 	try {
 		const part = {
 			code: req.body.code,
