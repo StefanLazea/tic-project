@@ -9,12 +9,12 @@
             class="p-button-success"
             @click="openNew"
           />
-          <Button
+          <!-- <Button
             label="Delete"
             icon="pi pi-trash"
             class="p-button-danger"
             :disabled="!selectedProducts || !selectedProducts.length"
-          />
+          /> -->
         </template>
       </Toolbar>
     </div>
@@ -161,16 +161,22 @@ export default {
   },
   mounted() {
     this.partsLoading = true;
-    this.partService.getParts().then(data => {
-      this.parts = data;
-      console.log(this.parts);
+    this.partService
+      .getParts()
+      .then(data => {
+        this.parts = data;
+        console.log(this.parts);
 
-      this.partsLoading = false;
-    });
+        this.partsLoading = false;
+      })
+      .catch(err => {
+        console.log(err);
+      });
     console.log(this.parts);
     if (localStorage.getItem("token")) {
       this.auth = true;
     }
+    console.log(this.auth);
   },
   methods: {
     getParts() {
@@ -193,7 +199,7 @@ export default {
     savePart() {
       this.submitted = true;
       console.log(this.part);
-      if (this.part.id) {
+      if (!this.part.id) {
         this.partService.savePart(this.part).then(res => {
           this.$toast.add({
             severity: "success",
@@ -204,22 +210,18 @@ export default {
 
           this.hideDialog();
           this.getParts();
-
-          // this.part = {};
         });
       } else {
-        this.partService.updatePart(this.part).then(res => {
+        this.partService.updatePart(this.part, this.part.id).then(res => {
           this.$toast.add({
             severity: "success",
             summary: `${res.message}`,
-            detail: "Added a part!",
+            detail: "Updated part!",
             life: 3000
           });
 
           this.hideDialog();
           this.getParts();
-
-          // this.part = {};
         });
       }
     },

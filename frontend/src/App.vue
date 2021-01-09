@@ -39,7 +39,7 @@ export default {
               detail: "Logged out",
               life: 2000
             });
-            this.$router.push("/parts");
+            this.$router.push("/");
           }
         }
       ]
