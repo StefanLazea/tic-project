@@ -1,6 +1,6 @@
 <template>
   <div id="nav">
-    <Menubar v-if="this.$route.path !== 'login'" :model="items" />
+    <Menubar v-if="this.$route.path !== '/login'" :model="items" />
     <Toast position="top-right" />
     <router-view />
   </div>

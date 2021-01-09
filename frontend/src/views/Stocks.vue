@@ -1,6 +1,6 @@
 <template>
   <div class="PartsLayout">
-    <Button v-if="auth === true" label="Add part" class="right" />
+    <Button v-if="auth === true" label="Add stock" class="right" />
 
     <DataTable :value="stocks">
       <Column field="ownerId" header="User Id"></Column>
