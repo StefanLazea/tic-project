@@ -20,24 +20,11 @@
       :modal="true"
       class="p-fluid"
     >
-      <div class="p-field">
-        <InputText
-          id="code"
-          v-model.trim="stock.user"
-          required="true"
-          placeholder="Code"
-          autofocus
-          :class="{ 'p-invalid': submitted && !stock.user }"
-        />
-        <small class="p-invalid" v-if="submitted && !stock.user"
-          >Code is required.</small
-        >
-      </div>
       <Dropdown
-        v-model="selectedCity"
-        :options="cities"
-        optionLabel="name"
-        placeholder="Select a City"
+        v-model="selectedPart"
+        :options="parts"
+        optionLabel="code"
+        placeholder="Select a part"
       />
 
       <div class="p-field p-col">
@@ -60,7 +47,7 @@
           label="Save"
           icon="pi pi-check"
           class="p-button-text"
-          @click="savePart"
+          @click="saveStock"
         />
       </template>
     </Dialog>
@@ -73,9 +60,9 @@ import Column from "primevue/column";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import InputNumber from "primevue/inputnumber";
-import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import StockService from "../service/StockService";
+import PartService from "../service/PartService";
 
 export default {
   data() {
@@ -86,27 +73,46 @@ export default {
       stock: {},
       submitted: false,
       dialogTitle: "Add stock",
-      selectedCity: null,
-      cities: [
-        { name: "New York", code: "NY" },
-        { name: "Rome", code: "RM" },
-        { name: "London", code: "LDN" },
-        { name: "Istanbul", code: "IST" },
-        { name: "Paris", code: "PRS" },
-      ],
+      parts: [],
+      selectedPart: {},
     };
   },
   stockService: null,
+  partService: null,
   created() {
     this.stockService = new StockService();
+    this.partService = new PartService();
   },
   mounted() {
     this.stockService.getStocks().then((data) => (this.stocks = data));
     if (localStorage.getItem("token")) {
       this.auth = true;
     }
+
+    this.partService.getParts().then((data) => (this.parts = data));
   },
   methods: {
+    getStock() {
+      this.stockService
+        .getStocks()
+        .then((data) => {
+          this.stocks = data;
+          // this.partsLoading = false;
+        })
+        .catch((err) => {
+          console.log(err.response);
+          if (err.response !== undefined || err.response.status === 404) {
+            this.parts = [];
+            this.partsLoading = false;
+            this.$toast.add({
+              severity: "error",
+              summary: "Something went wrong",
+              detail: `${err}`,
+              life: 3000,
+            });
+          }
+        });
+    },
     openNew() {
       console.log("aici");
       this.stock = {};
@@ -114,7 +120,32 @@ export default {
       this.partDialog = true;
     },
     hideDialog() {},
-    savePart() {},
+    saveStock() {
+      console.log(this.selectedPart, this.stock);
+      this.stockService
+        .saveStock({
+          quantity: this.stock.quantity,
+          partId: this.selectedPart.id,
+        })
+        .then((data) => {
+          console.log(data);
+          this.getStock();
+          this.partDialog = false;
+        })
+        .catch((err) => {
+          console.log(err.response);
+          if (err.response !== undefined || err.response.status === 404) {
+            this.parts = [];
+            this.partsLoading = false;
+            this.$toast.add({
+              severity: "error",
+              summary: "Something went wrong",
+              detail: `${err}`,
+              life: 3000,
+            });
+          }
+        });
+    },
   },
   components: {
     DataTable,
@@ -122,7 +153,6 @@ export default {
     Button,
     Dialog,
     InputNumber,
-    InputText,
     Dropdown,
   },
 };
