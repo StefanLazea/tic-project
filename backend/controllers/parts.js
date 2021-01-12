@@ -34,8 +34,9 @@ const savePart = async (req, res) => {
 			price: req.body.price,
 			name: req.body.name
 		}
-		//todo validari
-        await db.collection('parts').add(part);
+		//todo validaric
+		console.log(part)
+		await db.collection('parts').add(part);
 		res.status(200).json({ message: "Success" });
 	} catch (err) {
 		res.status(500).json({ message: err.message });
@@ -46,10 +47,10 @@ const deletePart = async (req, res) => {
 	try {
 		const partId = req.params.partId;
 		await db.collection("parts").doc(partId).delete();
-		res.status(200).json({message:"Part deleted"});
-	 } catch (err){
-		 res.status(500).json({message: err.message});
-	 }
+		res.status(200).json({ message: "Part deleted" });
+	} catch (err) {
+		res.status(500).json({ message: err.message });
+	}
 }
 module.exports = {
 	getAllParts,

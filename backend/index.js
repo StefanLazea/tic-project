@@ -1,7 +1,5 @@
 
 const express = require('express');
-const firebase = require('firebase');
-const admin = require('firebase-admin');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const routes = require('./routes');

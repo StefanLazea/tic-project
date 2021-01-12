@@ -1,7 +1,7 @@
 const db = require('../firebase/firebase')
 
 const getStock = async (req, res) => {
-    const stockRef = db.collection('stocks');
+	const stockRef = db.collection('stocks');
 	const snapshot = await stockRef.get();
 	let stocks = [];
 	snapshot.forEach(doc => {
@@ -16,7 +16,7 @@ const getStock = async (req, res) => {
 }
 
 const updateStockById = async (req, res) => {
-    try {
+	try {
 		const stockId = req.params.stockId;
 		let stock = { ...req.body };
 		await db.collection("stocks").doc(stockId).update(stock);
@@ -27,27 +27,31 @@ const updateStockById = async (req, res) => {
 }
 
 const deleteStockById = async (req, res) => {
-    try {
+	try {
 		const stockId = req.params.stockId;
 		await db.collection("stocks").doc(stockId).delete();
-		res.status(200).json({message:"Stocks deleted"});
-	 } catch (err){
-		 res.status(500).json({message: err.message});
-	 }
+		res.status(200).json({ message: "Stocks deleted" });
+	} catch (err) {
+		res.status(500).json({ message: err.message });
+	}
 }
 
 const addPartInStock = async (req, res) => {
-    try {
-		const stock = {...req.body}
-        await db.collection('stocks').add(stock);
+	try {
+		const stock = { ...req.body }
+		//partId, ownerId, quantity
+		await db.collection('stocks').add(stock);
 		res.status(200).json({ message: "Success" });
 	} catch (err) {
 		res.status(500).json({ message: err.message });
 	}
 }
+
+//todo other gets
+// get for retrieving data without IDs
 module.exports = {
-    getStock,
-    updateStockById,
-    deleteStockById,
-    addPartInStock
+	getStock,
+	updateStockById,
+	deleteStockById,
+	addPartInStock
 }

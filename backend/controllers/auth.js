@@ -26,6 +26,12 @@ const login = async (req, res) => {
 };
 
 const register = async (req, res) => {
+    let userFound = await UserService.findUserByEmail(req.body.email);
+    if (userFound) {
+        return res
+            .status(409)
+            .send({ message: "Exista deja un user cu acest email" });
+    }
     const salt = bcrypt.genSaltSync(10);
     ePassword = bcrypt.hashSync(req.body.password, salt);
     let user = {

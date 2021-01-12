@@ -160,18 +160,19 @@ export default {
     this.partService = new PartService();
   },
   mounted() {
-    this.partsLoading = true;
-    this.partService
-      .getParts()
-      .then(data => {
-        this.parts = data;
-        console.log(this.parts);
+    // this.partsLoading = true;
+    // this.partService
+    //   .getParts()
+    //   .then(data => {
+    //     this.parts = data;
+    //     console.log(this.parts);
 
-        this.partsLoading = false;
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    //     this.partsLoading = false;
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //   });
+    this.getParts()
     console.log(this.parts);
     if (localStorage.getItem("token")) {
       this.auth = true;
@@ -184,7 +185,19 @@ export default {
       this.partService.getParts().then(data => {
         this.parts = data;
         this.partsLoading = false;
-      });
+      }).catch(err => {
+        console.log(err.response)
+        if(err.response !== undefined || err.response.status === 404){
+          this.parts = []
+          this.partsLoading = false;
+          this.$toast.add({
+              severity: "error",
+              summary: "Something went wrong",
+              detail:`${err}`,
+              life: 3000
+            });
+        }
+      })
     },
     openNew() {
       this.dialogTitle = "Part Details / Add";
