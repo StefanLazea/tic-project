@@ -1,4 +1,5 @@
-const db = require('../firebase/firebase')
+const db = require('../firebase/firebase');
+const TokenService = require('../services/token');
 
 const getStock = async (req, res) => {
 	const stockRef = db.collection('stocks');
@@ -38,8 +39,12 @@ const deleteStockById = async (req, res) => {
 
 const addPartInStock = async (req, res) => {
 	try {
-		const stock = { ...req.body }
-		//partId, ownerId, quantity
+		const stock = {
+			partId: req.body.partId,
+			quantity: req.body.quantity
+		}
+		let userId = TokenService.getUserId(req.headers.authorization);
+		stock.ownerId = userId;
 		await db.collection('stocks').add(stock);
 		res.status(200).json({ message: "Success" });
 	} catch (err) {
@@ -53,5 +58,5 @@ module.exports = {
 	getStock,
 	updateStockById,
 	deleteStockById,
-	addPartInStock
+	addPartInStock,
 }

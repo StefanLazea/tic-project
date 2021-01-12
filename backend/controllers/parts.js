@@ -14,6 +14,18 @@ const getAllParts = async (req, res) => {
 	}
 	return res.send(parts);
 }
+const getPartNameById = async (req, res) => {
+	let part = await db.collection("parts").doc(req.params.id)
+		.get()
+		.then(function (querySnapshot) {
+			let part = querySnapshot.data();
+			return res.send(part)
+		})
+		.catch(function (error) {
+			console.log("Error getting documents: ", error);
+		});
+	return part;
+}
 
 const updateParts = async (req, res) => {
 	try {
@@ -56,5 +68,6 @@ module.exports = {
 	getAllParts,
 	updateParts,
 	savePart,
-	deletePart
+	deletePart,
+	getPartNameById
 }

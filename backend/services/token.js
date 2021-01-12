@@ -13,7 +13,9 @@ const createToken = (userFound) => {
 }
 
 const getUserId = (token) => {
-    const decode = jwt.decode(token, secret);
+    let trimmedToken = token.split(" ")[1]
+    const decode = jwt.decode(trimmedToken, TOKEN_SECRET);
+    console.log(decode, token)
     return decode.id;
 }
 module.exports = {

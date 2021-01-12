@@ -106,14 +106,6 @@
           locale="en-US"
         />
       </div>
-      <div class="p-field p-col">
-        <InputNumber
-          id="quantity"
-          v-model="part.quantity"
-          placeholder="Quantity"
-          integeronly
-        />
-      </div>
 
       <template #footer>
         <Button
@@ -152,7 +144,7 @@ export default {
       partDialog: false,
       partsLoading: false,
       dialogTitle: "Part Details",
-      part: {}
+      part: {},
     };
   },
   partService: null,
@@ -172,7 +164,7 @@ export default {
     //   .catch(err => {
     //     console.log(err);
     //   });
-    this.getParts()
+    this.getParts();
     console.log(this.parts);
     if (localStorage.getItem("token")) {
       this.auth = true;
@@ -182,22 +174,25 @@ export default {
   methods: {
     getParts() {
       this.partsLoading = true;
-      this.partService.getParts().then(data => {
-        this.parts = data;
-        this.partsLoading = false;
-      }).catch(err => {
-        console.log(err.response)
-        if(err.response !== undefined || err.response.status === 404){
-          this.parts = []
+      this.partService
+        .getParts()
+        .then((data) => {
+          this.parts = data;
           this.partsLoading = false;
-          this.$toast.add({
+        })
+        .catch((err) => {
+          console.log(err.response);
+          if (err.response !== undefined || err.response.status === 404) {
+            this.parts = [];
+            this.partsLoading = false;
+            this.$toast.add({
               severity: "error",
               summary: "Something went wrong",
-              detail:`${err}`,
-              life: 3000
+              detail: `${err}`,
+              life: 3000,
             });
-        }
-      })
+          }
+        });
     },
     openNew() {
       this.dialogTitle = "Part Details / Add";
@@ -213,24 +208,24 @@ export default {
       this.submitted = true;
       console.log(this.part);
       if (!this.part.id) {
-        this.partService.savePart(this.part).then(res => {
+        this.partService.savePart(this.part).then((res) => {
           this.$toast.add({
             severity: "success",
             summary: `${res.message}`,
             detail: "Added a part!",
-            life: 3000
+            life: 3000,
           });
 
           this.hideDialog();
           this.getParts();
         });
       } else {
-        this.partService.updatePart(this.part, this.part.id).then(res => {
+        this.partService.updatePart(this.part, this.part.id).then((res) => {
           this.$toast.add({
             severity: "success",
             summary: `${res.message}`,
             detail: "Updated part!",
-            life: 3000
+            life: 3000,
           });
 
           this.hideDialog();
@@ -240,12 +235,12 @@ export default {
     },
     deletePart(part) {
       console.log(part);
-      this.partService.deletePart(part.id).then(res => {
+      this.partService.deletePart(part.id).then((res) => {
         this.$toast.add({
           severity: "success",
           summary: `${res.message}`,
           detail: "Added a part!",
-          life: 3000
+          life: 3000,
         });
         this.getParts();
       });
@@ -255,7 +250,7 @@ export default {
       this.dialogTitle = "Part Details / Edit";
       this.part = { ...part };
       this.partDialog = true;
-    }
+    },
   },
   components: {
     DataTable,
@@ -265,8 +260,8 @@ export default {
     Dialog,
     InputNumber,
     InputText,
-    ProgressSpinner
-  }
+    ProgressSpinner,
+  },
 };
 </script>
 

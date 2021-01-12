@@ -12,6 +12,7 @@ export default class PartService {
       })
       .then(res => res.data);
   }
+
   updatePart(data, partId) {
     return axios
       .put(`http://localhost:3001/api/part/${partId}`, data, {
@@ -19,6 +20,7 @@ export default class PartService {
       })
       .then(res => res.data);
   }
+
   deletePart(partId) {
     return axios
       .delete(`http://localhost:3001/api/part/${partId}`, {
