@@ -122,6 +122,7 @@ export default {
     hideDialog() {},
     saveStock() {
       console.log(this.selectedPart, this.stock);
+      //update if the stock is already here
       this.stockService
         .saveStock({
           quantity: this.stock.quantity,
