@@ -6,13 +6,38 @@
       class="right"
       @click="openNew"
     />
-
-    <DataTable :value="stocks">
-      <Column field="ownerId" header="User Id"></Column>
-      <Column field="partId" header="Part Id"></Column>
-      <Column field="quantity" header="Quantity"></Column>
+    <DataTable
+      :value="stocks"
+      class="p-datatable-responsive-demo"
+      :paginator="true"
+      :rows="10"
+    >
+      <template #header> Table for stocks </template>
+      <Column field="ownerId" header="Owner">
+        <template #body="slotProps">
+          <span class="p-column-title">Owner</span>
+          {{ slotProps.data.ownerId }}
+        </template>
+      </Column>
+      <Column field="partId" header="Part">
+        <template #body="slotProps">
+          <span class="p-column-title">Part</span>
+          {{ slotProps.data.partId }}
+        </template>
+      </Column>
+      <Column field="quantity" header="Quantity">
+        <template #body="slotProps">
+          <span class="p-column-title">Quantity</span>
+          {{ slotProps.data.quantity }}
+        </template>
+      </Column>
+      <Column field="quantity" header="Quantity">
+        <template #body="slotProps">
+          <span class="p-column-title">Quantity</span>
+          {{ slotProps.data.quantity }}
+        </template>
+      </Column>
     </DataTable>
-
     <Dialog
       v-model:visible="partDialog"
       :style="{ width: '450px' }"
@@ -158,7 +183,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .PartsLayout {
   padding: 20px;
   margin-top: 20px;

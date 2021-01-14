@@ -265,7 +265,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .Stocks {
   padding: 20px;
   margin-top: 20px;
